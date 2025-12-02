@@ -1,0 +1,32 @@
+# Core dependencies
+python-dotenv>=1.0.0
+
+# Speech-to-Text (Whisper)
+faster-whisper>=0.10.0
+openai-whisper>=20231117
+
+# Audio processing
+# pyaudio>=0.2.14  # Requires portaudio19-dev - install manually if needed
+sounddevice>=0.4.6
+soundfile>=0.12.1
+numpy>=1.24.0
+pydub>=0.25.1
+
+# LLM Integration (Ollama)
+ollama>=0.1.0
+requests>=2.31.0
+
+# Text-to-Speech (Piper)
+# piper-tts>=1.2.0  # Install separately if needed
+gtts>=2.5.0  # Google Text-to-Speech (better quality)
+
+# CLI and UX
+rich>=13.7.0
+prompt-toolkit>=3.0.43
+
+# Configuration
+pyyaml>=6.0.1
+
+# Optional: GPU acceleration
+# torch>=2.1.0
+# torchaudio>=2.1.0

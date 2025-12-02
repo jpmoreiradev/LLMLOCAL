@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Models (large files)
+models/*.bin
+models/*.onnx
+models/*.pt
+models/*.safetensors
+
+# Audio files
+*.wav
+*.mp3
+temp_audio/
+
+# Conversation history (privacy)
+history/*.json
+history/*.txt
+
+# Config with sensitive data
+config/user_settings.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

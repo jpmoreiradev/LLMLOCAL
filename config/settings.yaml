@@ -1,0 +1,57 @@
+# English Training Assistant - Configuration
+
+# Student profile
+student:
+  level: "intermediate"  # beginner, intermediate, advanced
+  native_language: "Portuguese"
+  focus_areas:
+    - conversation
+    - grammar
+    - pronunciation
+  topics:
+    - daily_life
+    - work
+    - travel
+    - technology
+
+# Speech-to-Text (Whisper)
+stt:
+  model: "base"  # base is better for Portuguese + English mix
+  language: null  # null = auto-detect (accepts PT and EN)
+  device: "cpu"  # cpu or cuda
+
+# LLM (Ollama)
+llm:
+  model: "llama3"  # llama3 follows instructions better than phi3
+  temperature: 0.7
+  max_tokens: 50  # Very short responses (2 sentences max)
+  system_role: "english_teacher"
+
+# Text-to-Speech (Piper)
+tts:
+  enabled: true
+  voice: "en_US-lessac-medium"  # Natural American English
+  speed: 1.0
+
+# Corrections
+corrections:
+  enabled: true
+  style: "friendly"  # strict, friendly, minimal
+  show_grammar: true
+  show_pronunciation: true
+  show_vocabulary: true
+
+# Audio settings
+audio:
+  sample_rate: 16000
+  channels: 1
+  recording_mode: "manual"  # "manual" = press Enter to stop, "auto" = silence detection
+  silence_threshold: 0.003  # Volume threshold (only for auto mode)
+  max_silence_duration: 6.0  # seconds of silence before stopping (only for auto mode)
+  max_recording_time: 60  # seconds (maximum length for manual mode)
+
+# History
+history:
+  save_conversations: true
+  save_audio: false
+  max_sessions: 100
