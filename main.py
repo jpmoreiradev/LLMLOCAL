@@ -129,8 +129,7 @@ Focus: [yellow]{', '.join(self.config['student']['focus_areas'])}[/yellow]
         self.display_welcome()
 
         # Initial greeting in Portuguese
-        greeting = "Olá! Sou a Sarah, sua professora de inglês. Vamos praticar! Pode falar em " \
-        "português ou inglês, como preferir."
+        greeting = "Olá! Sou a Sarah, sua professora de inglês. Vamos praticar! Tente Responder somente em ingles. "
         console.print(f"\n[blue]🤖 Teacher:[/blue] {greeting}\n")
         self.tts.speak(greeting)
 

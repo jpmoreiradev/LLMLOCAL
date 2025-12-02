@@ -156,57 +156,87 @@ class GoogleTTS:
             self.enabled = False
             self.gTTS = None
 
-    def _detect_language_simple(self, text):
+    def _split_mixed_text(self, text):
         """
-        Simple language detection - Portuguese or English
+        Split text with quotes into segments: Portuguese outside, English inside quotes
+        Returns list of (text, language) tuples
         """
-        # Common Portuguese words
-        pt_words = ['você', 'está', 'como', 'muito', 'bem', 'tenta', 'diz',
-                    'fala', 'seu', 'sua', 'agora', 'boa', 'quase', 'não',
-                    'ótimo', 'correto', 'forma', 'de', 'para', 'com', 'que']
+        import re
 
-        text_lower = text.lower()
+        segments = []
+        # Pattern to find text in single or double quotes
+        pattern = r"['\"]([^'\"]+)['\"]"
 
-        # Count Portuguese words
-        pt_count = sum(1 for word in pt_words if f' {word} ' in f' {text_lower} ')
+        last_end = 0
+        for match in re.finditer(pattern, text):
+            # Add Portuguese text before quote
+            if match.start() > last_end:
+                pt_text = text[last_end:match.start()].strip()
+                if pt_text:
+                    segments.append((pt_text, 'pt'))
 
-        # If has Portuguese words, speak in Portuguese
-        return 'pt' if pt_count >= 1 else 'en'
+            # Add English text inside quotes
+            en_text = match.group(1).strip()
+            if en_text:
+                segments.append((en_text, 'en'))
+
+            last_end = match.end()
+
+        # Add remaining Portuguese text
+        if last_end < len(text):
+            pt_text = text[last_end:].strip()
+            if pt_text:
+                segments.append((pt_text, 'pt'))
+
+        # If no quotes found, detect language of whole text
+        if not segments:
+            pt_words = ['você', 'está', 'como', 'muito', 'bem', 'tenta', 'diz',
+                        'fala', 'seu', 'sua', 'agora', 'boa', 'quase', 'não',
+                        'ótimo', 'correto', 'forma', 'de', 'para', 'com', 'que',
+                        'certo', 'falta', 'repete', 'entendi', 'devagar']
+
+            text_lower = text.lower()
+            pt_count = sum(1 for word in pt_words if f' {word} ' in f' {text_lower} ')
+            lang = 'pt' if pt_count >= 1 else 'en'
+            segments.append((text, lang))
+
+        return segments
 
     def speak(self, text):
-        """Convert text to speech using Google TTS with auto language detection"""
+        """Convert text to speech with bilingual support (PT outside quotes, EN inside)"""
         if not self.enabled or not self.gTTS:
             print(f"🔊 [Would say: {text}]")
             return
 
         try:
-            # Detect language
-            lang = self._detect_language_simple(text)
+            # Split text into language segments
+            segments = self._split_mixed_text(text)
 
-            # Create temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
-                temp_file = fp.name
+            # Generate and play each segment
+            for segment_text, lang in segments:
+                # Create temporary file
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
+                    temp_file = fp.name
 
-            # Generate speech
-            tts = self.gTTS(text=text, lang=lang, slow=self.slow)
-            tts.save(temp_file)
+                # Generate speech with correct language
+                tts = self.gTTS(text=segment_text, lang=lang, slow=self.slow)
+                tts.save(temp_file)
 
-            # Play audio
-            if os.system("which mpg123 > /dev/null 2>&1") == 0:
-                os.system(f"mpg123 -q {temp_file}")
-            elif os.system("which ffplay > /dev/null 2>&1") == 0:
-                os.system(f"ffplay -nodisp -autoexit -loglevel quiet {temp_file}")
-            elif os.system("which mpv > /dev/null 2>&1") == 0:
-                os.system(f"mpv --really-quiet {temp_file}")
-            else:
-                print("⚠️  No audio player found. Install mpg123, ffplay, or mpv")
-                print(f"📝 Text: {text}")
+                # Play audio
+                if os.system("which mpg123 > /dev/null 2>&1") == 0:
+                    os.system(f"mpg123 -q {temp_file}")
+                elif os.system("which ffplay > /dev/null 2>&1") == 0:
+                    os.system(f"ffplay -nodisp -autoexit -loglevel quiet {temp_file}")
+                elif os.system("which mpv > /dev/null 2>&1") == 0:
+                    os.system(f"mpv --really-quiet {temp_file}")
+                else:
+                    print("⚠️  No audio player found")
 
-            # Cleanup
-            try:
-                os.unlink(temp_file)
-            except:
-                pass
+                # Cleanup
+                try:
+                    os.unlink(temp_file)
+                except:
+                    pass
 
         except Exception as e:
             print(f"⚠️  TTS error: {e}")
